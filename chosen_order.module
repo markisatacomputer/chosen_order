@@ -1,0 +1,61 @@
+<?php
+/**
+ * Implements hook_form_alter().
+ */
+function chosen_order_form_alter(&$form, &$form_state, $form_id) {
+  //|    Add some js to make multi-select chosen field sortable
+  //|    Add a hidden field to store the sort order
+  if ($form_state['#chosen_order'] && !$form_state['submitted']) {
+    foreach ($form as $key => $field) {
+      $key . '_order';
+      if (strpos($key,'field_') === 0 && $field[LANGUAGE_NONE]['#chosen'] && $field[LANGUAGE_NONE]['#multiple']) {
+        $form[$key . '_order'] = array(
+          '#type' => 'hidden',
+          '#attributes' => array(
+            'class' => array(
+              'field-type-chosen-order',
+            ),
+            'id' => 'edit_' . $key . '_' . LANGUAGE_NONE . '_chosen_order',
+          ),
+        );
+        if (isset($field[LANGUAGE_NONE]['#default_value']) && !empty($field[LANGUAGE_NONE]['#default_value']) && is_array($field[LANGUAGE_NONE]['#default_value'])) {
+          $form[$key . '_order']['#default_value'] = implode(',', $field[LANGUAGE_NONE]['#default_value']);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function chosen_order_field_widget_form_alter(&$element, &$form_state, $context) {
+  if ($element['#chosen'] && $element['#multiple']) {
+    //|  Add sort js to all chosen multiple select widgets
+    drupal_add_library('system', 'ui.sortable');
+    drupal_add_js(drupal_get_path('module', 'chosen_order') . '/js/chosen_order_order.js');
+    drupal_add_css(drupal_get_path('module', 'chosen_order') . '/css/chosen_order_order.css');
+    //|  Add sort js to all chosen multiple select widgets
+    $element['#element_validate'][] = 'chosen_order_form_chosen_field_validate_order';
+
+    $form_state['#chosen_order'] = TRUE;
+  }
+}
+
+function chosen_order_form_chosen_field_validate_order($element, &$form_state, $form) {
+  $el_name = $element['#field_name'];
+  $order_field_name = $el_name . '_order';
+
+  //|  Get values and put in correctly formatted array
+  $values = explode(',',$form_state['values'][$order_field_name]);
+  if (isset($values) && is_array($values) && !empty($values)) {
+    //|  Set value
+    foreach ($values as $key => $value) {
+      $values[$key] = array($element['#value_key'] => $value);
+    }
+    form_set_value(
+      $form[$el_name],
+      array(LANGUAGE_NONE => $values),
+      $form_state);
+  }
+}

@@ -1,0 +1,6 @@
+name = chosen_order
+description = Reorder selections in multiple select fields with chosen enabled
+package = User interface
+version = 7.x-1.0
+core = 7.x
+dependencies[] = chosen
