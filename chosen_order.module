@@ -33,8 +33,8 @@ function chosen_order_field_widget_form_alter(&$element, &$form_state, $context)
   if ($element['#chosen'] && $element['#multiple']) {
     //|  Add sort js to all chosen multiple select widgets
     drupal_add_library('system', 'ui.sortable');
-    drupal_add_js(drupal_get_path('module', 'chosen_order') . '/js/chosen_order_order.js');
-    drupal_add_css(drupal_get_path('module', 'chosen_order') . '/css/chosen_order_order.css');
+    drupal_add_js(drupal_get_path('module', 'chosen_order') . '/js/chosen_order.js');
+    drupal_add_css(drupal_get_path('module', 'chosen_order') . '/css/chosen_order.css');
     //|  Add sort js to all chosen multiple select widgets
     $element['#element_validate'][] = 'chosen_order_form_chosen_field_validate_order';
 
