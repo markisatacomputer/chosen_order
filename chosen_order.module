@@ -6,9 +6,9 @@ function chosen_order_form_alter(&$form, &$form_state, $form_id) {
   //|    Add some js to make multi-select chosen field sortable
   //|    Add a hidden field to store the sort order
   if (!empty($form_state['#chosen_order']) && !$form_state['submitted']) {
-    foreach ($form as $key => $field) {
-      $key . '_order';
-      if (strpos($key,'field_') === 0 && $field[LANGUAGE_NONE]['#chosen'] && $field[LANGUAGE_NONE]['#multiple']) {
+    foreach (element_children($form) as $key) {
+      $field = &$form[$key];
+      if (isset($field[LANGUAGE_NONE]['#field_name']) && !empty($field[LANGUAGE_NONE]['#chosen']) && $field[LANGUAGE_NONE]['#multiple']) {
         $form[$key . '_order'] = array(
           '#type' => 'hidden',
           '#attributes' => array(
